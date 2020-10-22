@@ -1,0 +1,11 @@
+#!/bin/sh
+#PBS -q gpu
+#PBS -l ngpus=1
+#PBS -l mem=16gb
+#PBS -l ncpus=1
+#PBS -N ecl
+
+
+
+cd $PBS_O_WORKDIR
+./cnn_pytorch_ecl.py
