@@ -24,41 +24,16 @@ def entropy(signal):
 def get_entropy_sample_from_patch_entropy(image_sample):
     #image_sample_normalized = np.true_divide(image_sample, 255)
     new_image_sample = []
+    ranges = list(range(0, 256, 15))
+    range_dict = {}
+    for item,value in enumerate(ranges):
+        range_dict[value] = item
+
     for index, feature in enumerate(image_sample):
-        if feature >= 240:
-            new_image_sample.append(16)
-        elif feature >= 225:
-            new_image_sample.append(15)
-        elif feature >= 210:
-            new_image_sample.append(14)
-        elif feature >= 195:
-            new_image_sample.append(13)
-        elif feature >= 180:
-            new_image_sample.append(12)
-        elif feature >= 165:
-            new_image_sample.append(11)
-        elif feature >= 150:
-            new_image_sample.append(10)
-        elif feature >= 135:
-            new_image_sample.append(9)
-        elif feature >= 120:
-            new_image_sample.append(8)
-        elif feature >= 105:
-            new_image_sample.append(7)
-        elif feature >= 90:
-            new_image_sample.append(6)
-        elif feature >= 75:
-            new_image_sample.append(5)
-        elif feature >= 60:
-            new_image_sample.append(4)
-        elif feature >= 45:
-            new_image_sample.append(3)
-        elif feature >= 30:
-            new_image_sample.append(2)
-        elif feature >= 15:
-            new_image_sample.append(1)
-        else:
-            new_image_sample.append(0)
+        for item in ranges:
+            if feature <= item:
+                new_image_sample.append(range_dict[item])
+                break
 
     N = 4
     patches = []
@@ -69,7 +44,7 @@ def get_entropy_sample_from_patch_entropy(image_sample):
         patch = new_image_sample[Lx:Ux]
         if len(patch) == N * 2:
             patches.append(entropy(patch))
-    
+
     return(np.mean(patches))
 
 
@@ -91,9 +66,9 @@ def rearrange_feature_indices(mapping_filename, data_features):
     for i in mapping_keys_sorted:
         oneD_mapping.append(mapping_dict[i])
 
-    dim = 561
+    dim = 300
 
-    tsne_mapped_data_features = np.zeros((len(data_features), 561))
+    tsne_mapped_data_features = np.zeros((len(data_features), 300))
 
 
     for i,j in enumerate(tsne_mapped_data_features):
@@ -128,7 +103,7 @@ def get_entropy_of_dataset(filename_prefix):
     #new_dataset_pd.to_csv(output_filename, encoding='utf-8', index=False, header=None)
 
 def get_entropy_of_datasets_for_diff_perplexity(filename_suffix, perplexity):
-    
+
     data = pd.read_csv('test_randomized.csv', header=None)
     data = data.head(1000)
     features= data.columns[1:]
@@ -139,7 +114,7 @@ def get_entropy_of_datasets_for_diff_perplexity(filename_suffix, perplexity):
     data_label_np = data_label.to_numpy()
     mapping_filename = "mapping" + filename_suffix + str(perplexity) + ".csv"
 
-    tsne_mapped_dataset = rearrange_feature_indices(mapping_filename, data_features_np)        
+    tsne_mapped_dataset = rearrange_feature_indices(mapping_filename, data_features_np)
     entropy_dataset = []
     for i in range(len(tsne_mapped_dataset)):
         temp_new_sample = []
@@ -175,7 +150,7 @@ def main():
 
     print(entropy_frame)
     entropy_frame_pd = pd.DataFrame(entropy_frame)
-    entropy_frame_pd.to_csv('entropy_comparison.csv', encoding='utf-8', index=False, header=None)
+    entropy_frame_pd.to_csv('entropy_comparison_3.csv', encoding='utf-8', index=False, header=None)
 
 if __name__ == "__main__":
     main()
